@@ -3,29 +3,30 @@ const { User } = require('../models');
 const userController = {
     getAllUsers(req, res) {
         User.find({})
-            .populate('thoughts')
-            .populate('friends')
+            .populate({path: 'thoughts', select: '-__v'})
+            .populate({path: 'friends', select: '-__v'})
+            .select('-__v')
             .sort({ _id: -1 })
             .then(dbUserData => res.json(dbUserData))
             .catch(err => {
                 console.log(err)
-                res.status(400).json(err)
+                res.status(500).json(err)
             })
     },
     getOneUser(req, res) {
         User.findOne({ _id: req.params.id })
-            .populate('thoughts')
-            .populate('friends')
+            .populate({path: 'thoughts', select: '-__v'})
+            .populate({path: 'friends', select: '-__v'})
+            .select('-__v')
             .then(dbUserData => {
                 if (!dbUserData) {
-                    res.status(404).json({ message: 'There is not a user with this id :(' })
-                    return
+                    return res.json({ message: 'There is not a user with this id :(' })
                 }
                 res.json(dbUserData)
             })
             .catch(err => {
                 console.log(err)
-                res.status(400).json(err)
+                res.status(500).json(err)
             })
     },
     createOneUser(req, res) {
@@ -33,42 +34,38 @@ const userController = {
             .then(dbUserData => res.json(dbUserData))
             .catch(err => {
                 console.log(err)
-                res.status(400).json(err)
+                res.status(500).json(err)
             })
     },
-    updateOneUser(req, res) {
+    updateOneUser({params, body}, res) {
         User.findByIdAndUpdate(
-            req.params.id,
-            {
-                $set: { username: req.body.username, email: req.body.email },
-            },
+            params.id,
+            body,
             { runValidators: true, new: true })
-            .populate('thoughts')
-            .populate('friends')
+            .populate({path: 'thoughts', select: '-__v'})
+            .populate({path: 'friends', select: '-__v'})
             .then(dbUserData => {
                 if (!dbUserData) {
-                    res.status(404).json({ message: 'There is not a user with this id :(' })
-                    return
+                    return res.json({ message: 'There is not a user with this id :(' })
                 }
                 res.json(dbUserData)
             })
             .catch(err => {
                 console.log(err)
-                res.status(400).json(err)
+                res.status(500).json(err)
             })
     },
     deleteOneUser(req, res) {
         User.findByIdAndDelete(req.params.id)
             .then(dbUserData => {
                 if (!dbUserData) {
-                    res.status(404).json({ message: 'There is not a user with this id :(' })
-                    return
+                    return res.json({ message: 'There is not a user with this id :(' })
                 }
                 res.json({ message: 'The user has been DESTROYED!' })
             })
             .catch(err => {
                 console.log(err)
-                res.status(400).json(err)
+                res.status(500).json(err)
             })
     },
     addFriend(req, res) {
@@ -77,18 +74,17 @@ const userController = {
             { $addToSet: { friends: req.params.friendId } },
             { runValidators: true, new: true }
         )
-            .populate('thoughts')
-            .populate('friends')
+            .populate({path: 'thoughts', select: '-__v'})
+            .populate({path: 'friends', select: '-__v'})
             .then(dbUserData => {
                 if (!dbUserData) {
-                    res.status(404).json({ message: 'There is not a user with this id :(' })
-                    return
+                    return res.json({ message: 'There is not a user with this id :(' })
                 }
                 res.json(dbUserData)
             })
             .catch(err => {
                 console.log(err)
-                res.status(400).json(err)
+                res.status(500).json(err)
             })
     },
     removeFriend(req, res) {
@@ -97,18 +93,17 @@ const userController = {
             { $pull: { friends: req.params.friendId } },
             { runValidators: true, new: true }
         )
-            .populate('thoughts')
-            .populate('friends')
+            .populate({path: 'thoughts', select: '-__v'})
+            .populate({path: 'friends', select: '-__v'})
             .then(dbUserData => {
                 if (!dbUserData) {
-                    res.status(404).json({ message: 'There is not a user with this id :(' })
-                    return
+                    return res.json({ message: 'There is not a user with this id :(' })
                 }
                 res.json(dbUserData)
             })
             .catch(err => {
                 console.log(err)
-                res.status(400).json(err)
+                res.status(500).json(err)
             })
     }
 }

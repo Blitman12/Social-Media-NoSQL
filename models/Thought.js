@@ -1,4 +1,5 @@
 const { Schema, model, Types } = require('mongoose');
+const dateFormat = require('../utils/dateFormat')
 
 const ReactionSchema = new Schema(
     {
@@ -8,18 +9,18 @@ const ReactionSchema = new Schema(
         },
         reactionBody: {
             type: String,
-            required: true,
-            minlength: 1,
-            maxlength: 280
+            required: 'You must enter some text',
+            minlength: [1, 'The minimum length is one'],
+            maxlength: [280, 'The max number of characters is 280']
         },
         username: {
             type: String,
-            required: true
+            required: 'A username is required'
         },
         createdAt: {
             type: Date,
-            default: Date.now
-            // add date formatter with a getter
+            default: Date.now,
+            get: createdAtVal => dateFormat(createdAtVal)
         }
     },
     {
@@ -34,18 +35,18 @@ const ThoughtSchema = new Schema(
     {
         thoughtText: {
             type: String,
-            required: true,
-            minlength: 1,
-            maxlength: 280
+            required: 'You must enter some text',
+            minlength: [1, 'The minimum length is one'],
+            maxlength: [280, 'The max number of characters is 280']
         },
         createdAt: {
             type: Date,
-            default: Date.now
-            // add date formatter with a getter
+            default: Date.now,
+            get: createdAtVal => dateFormat(createdAtVal)
         },
         username: {
             type: String,
-            required: true
+            required: 'Please enter a username'
         },
         reactions: [ReactionSchema]
     },

@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose');
+const Thought = require('./Thought')
 
 
 const UserSchema = new Schema(
@@ -31,9 +32,20 @@ const UserSchema = new Schema(
     {
         toJSON: {
             virtuals: true,
-        }
+        },
+        id: false
     }
 );
+
+
+// Delete user thoughts when user is removed
+// UserSchema.post('findOneAndDelete', function() {
+//     const user = this
+//     console.log("Hello", user)
+// })
+
+
+
 
 UserSchema.virtual('friendCount').get(function() {
     return this.friends.length

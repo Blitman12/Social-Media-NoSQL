@@ -61,10 +61,8 @@ const userController = {
                 if (!dbUserData) {
                     return res.json({ message: 'There is not a user with this id :(' })
                 }
-                return dbUserData.thoughts
-            }).then(thoughtsArr => {
-                Thought.remove({ _id: {$in: thoughtsArr}})
-                .then(res.json({ message: "User has been destroyed!" }))
+                Thought.deleteMany({ _id: { $in: dbUserData.thoughts } })
+                    .then(res.json({ message: "User has been destroyed!" }))
             })
             .catch(err => {
                 console.log(err)

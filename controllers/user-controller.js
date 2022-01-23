@@ -56,31 +56,20 @@ const userController = {
             })
     },
     deleteOneUser(req, res) {
-        User.findById(req.params.id)
-            .then(({ thoughts }) => {
-                console.log(thoughts[0])
-                thoughts.forEach(thought => {
-                    Thought.findByIdAndDelete(thought)
-                        .then(thought => {
-                            console.log('deleted')
-                        }).catch(err => {
-                            console.log(err)
-                        })
-                })
+        User.findByIdAndDelete(req.params.id)
+            .then(dbUserData => {
+                if (!dbUserData) {
+                    return res.json({ message: 'There is not a user with this id :(' })
+                }
+                return dbUserData.thoughts
+            }).then(thoughtsArr => {
+                Thought.remove({ _id: {$in: thoughtsArr}})
+                .then(res.json({ message: "User has been destroyed!" }))
             })
-            .then(
-                User.findByIdAndDelete(req.params.id)
-                    .then(dbUserData => {
-                        if (!dbUserData) {
-                            return res.json({ message: 'There is not a user with this id :(' })
-                        }
-                        res.json({ message: 'The user has been DESTROYED!' })
-                    })
-                    .catch(err => {
-                        console.log(err)
-                        res.status(500).json(err)
-                    })
-            )
+            .catch(err => {
+                console.log(err)
+                res.status(500).json(err)
+            })
     },
     addFriend(req, res) {
         User.findByIdAndUpdate(
